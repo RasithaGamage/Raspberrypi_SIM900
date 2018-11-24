@@ -34,12 +34,15 @@ cut = 'false'
 
 carrierResponse = 'null'
 
+callCut ='false'; #call cut by program
+
 while(1):
         result = ser.readline()
+        print("1 "+result)
         if result.strip()=='OK':
                 while(1):
                     result = ser.readline()
-                    
+                    print("2 "+result)
                     checkVar1 = result.split(' ', 1 )
                     
                     if checkVar1[0]=='+CLCC:':
@@ -55,32 +58,56 @@ while(1):
                             p.wait()
                             os.system('echo %s|sudo -S %s' % (sudoP,'rm /home/pi/Desktop/ims_temp.mp3'))
                             ser.write(('ATH\r\n').encode())
-                            callFinished='true'
-                            
+                            if cut=='false': 
+                                while(1):
+                                    result = ser.readline()
+                                    print("3 "+result)
+                                    if result.strip()=='OK': #call cut by program
+                                        callCut='true'
+                                        while(1):
+                                            result = ser.readline()
+                                            print("4 "+result)
+                                            checkVar3 = result.split(' ', 1 )
+                                            if checkVar3[0]=='+CLCC:':
+                                                checkVar4 = result.split(',', 3 )
+                                                if checkVar4[2]=='6':
+                                                    cut='true'
+                                                    break
+                                        break
+                            else:
+                                break
+                              
                         if checkVar2[2]=='6': #call cut
                             cut='true'
+                                                    
+                        if cut=='true':
                             break
                         
-                while(1):
-                    result = ser.readline()
+                if callCut=='false':
                     
-                    if result.strip()=='BUSY':
-                        carrierResponse='BUSY'
-                        break
+                    while(1):
+                        result = ser.readline()
+                        
+                        if result.strip()=='BUSY':
+                            carrierResponse='BUSY'
+                            break
+                        
+                        if result.strip()=='NO ANSWER':
+                            carrierResponse='NO ANSWER'
+                            break
+                        
+                        if result.strip()=='NO CARRIER':
+                            carrierResponse='NO CARRIER'
+                            break
+                        
+                        if callCut=='true':
+                            carrierResponse='null'
+                            break
                     
-                    if result.strip()=='NO ANSWER':
-                        carrierResponse='NO ANSWER'
-                        break
-                    
-                    if result.strip()=='NO CARRIER':
-                        carrierResponse='NO CARRIER'
-                        break
-            
-         
         if (dialing=='true'):
             print(dialing+":"+answered+":"+cut+":"+carrierResponse)
             break;
-                     
+        
 #OK #BUSY #NO ANSWER #NO CARRIER     
 ser.flush()
 ser.close()
