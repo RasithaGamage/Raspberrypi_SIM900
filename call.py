@@ -5,6 +5,9 @@ import sys
 import subprocess
 import os
 import signal
+from pathlib import Path
+
+
 
 phoneNum = sys.argv[1];
 message = sys.argv[2];
@@ -32,17 +35,15 @@ dialing = 'false'
 answered = 'false'
 cut = 'false'
 
-carrierResponse = 'null'
+automaticCut ='false'
 
-callCut ='false'; #call cut by program
+carrierResponse = 'null'
 
 while(1):
         result = ser.readline()
-        print("1 "+result)
         if result.strip()=='OK':
                 while(1):
                     result = ser.readline()
-                    print("2 "+result)
                     checkVar1 = result.split(' ', 1 )
                     
                     if checkVar1[0]=='+CLCC:':
@@ -53,39 +54,44 @@ while(1):
                             
                         if checkVar2[2]=='0': #call answered
                             answered = 'true'
-##                            subprocess.call('mpg321 -o alsa --loop 10 /home/pi/Desktop/ims_temp.mp3')
-                            p = subprocess.Popen(["mpg321","-o","alsa","--loop","5","/home/pi/Desktop/ims_temp.mp3"],stdout=subprocess.PIPE, stdin = subprocess.PIPE, stderr=subprocess.STDOUT)
-                            p.wait()
-                            os.system('echo %s|sudo -S %s' % (sudoP,'rm /home/pi/Desktop/ims_temp.mp3'))
-                            ser.write(('ATH\r\n').encode())
-                            if cut=='false': 
-                                while(1):
-                                    result = ser.readline()
-                                    print("3 "+result)
-                                    if result.strip()=='OK': #call cut by program
-                                        callCut='true'
-                                        while(1):
-                                            result = ser.readline()
-                                            print("4 "+result)
-                                            checkVar3 = result.split(' ', 1 )
-                                            if checkVar3[0]=='+CLCC:':
-                                                checkVar4 = result.split(',', 3 )
-                                                if checkVar4[2]=='6':
-                                                    cut='true'
-                                                    break
-                                        break
-                            else:
-                                break
-                              
+
                         if checkVar2[2]=='6': #call cut
                             cut='true'
-                                                    
-                        if cut=='true':
-                            break
+                            
+                        if answered=='true' :
+                            file_path = Path("/home/pi/Desktop/ims_temp.mp3")
+                            if file_path.is_file():
+                                p = subprocess.Popen(["mpg321","-o","alsa","--loop","2","/home/pi/Desktop/ims_temp.mp3"],stdout=subprocess.PIPE, stdin = subprocess.PIPE, stderr=subprocess.STDOUT)
+                                p.wait()
+                                os.system('echo %s|sudo -S %s' % (sudoP,'rm /home/pi/Desktop/ims_temp.mp3'))
+                            
+                            ser.write(('ATH\r\n').encode())
+                            
+                            
+                            while(1):
+                                 result = ser.readline()
+                                 
+                                 if result.strip()=='ATH':
+                                     automaticCut = 'true'
+                                     carrierResponse='CALL FINISHED'
+                                     
+                                 checkVar3 = result.split(' ', 1 )
+                                 if checkVar3[0]=='+CLCC:':
+                                     checkVar4 = result.split(',', 3 )
+                                     if checkVar4[2]=='6':
+                                         cut='true'
+                                         break
+                            
                         
-                if callCut=='false':
-                    
+                        if cut=='true':
+                            break   
+                            
+                if automaticCut == 'false':            
                     while(1):
+                        
+                        if carrierResponse=='CALL FINISHED':
+                            break
+                                     
                         result = ser.readline()
                         
                         if result.strip()=='BUSY':
@@ -100,13 +106,19 @@ while(1):
                             carrierResponse='NO CARRIER'
                             break
                         
-                        if callCut=='true':
-                            carrierResponse='null'
+                        if result.strip()=='NO ANSWER':
+                            carrierResponse='NO ANSWER'
+                            break
+                        
+                        if result.strip()=='ERROR':
+                            carrierResponse='ERROR'
                             break
                     
+                    
         if (dialing=='true'):
-            print(dialing+":"+answered+":"+cut+":"+carrierResponse)
+            print("ANS:"+answered+" "+carrierResponse)
             break;
+
         
 #OK #BUSY #NO ANSWER #NO CARRIER     
 ser.flush()
