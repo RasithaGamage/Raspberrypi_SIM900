@@ -19,12 +19,10 @@ Generate automatic voice calls with Raspberry pi and SIM900 GSM module
            <ul>
              <li>check: https://www.tldp.org/HOWTO/Remote-Serial-Console-HOWTO/modem-minicom.html</li>
           </ul>
-
      <li>Enable CLCC </li>
            <ul>
              <li>AT+CLCC=1</li>
-           </ul>
-           
+           </ul>  
      <li>making a call</li>
          <ul>
            <li>AT</li>
