@@ -15,8 +15,17 @@ Generate automatic voice calls with Raspberry pi and SIM900 GSM module
   <li>Audio OUT of the RPI3 is connected to Audio IN of SIM900</li>
   <li>Install minicom and check the GSM module with some ATcommands to ensure the right connection</li>
    <ol>
-   <li>sudo apt-get install minicom       check: https://www.tldp.org/HOWTO/Remote-Serial-Console-HOWTO/modem-minicom.html</li>
-   <li>making a call</li>
+     <li>sudo apt-get install minicom  
+           <ul>
+             <li>check: https://www.tldp.org/HOWTO/Remote-Serial-Console-HOWTO/modem-minicom.html</li>
+          </ul>
+
+     <li>Enable CLCC </li>
+           <ul>
+             <li>AT+CLCC=1</li>
+           </ul>
+           
+     <li>making a call</li>
          <ul>
            <li>AT</li>
            <li>ATD +9471XXXXXXX;</li>
