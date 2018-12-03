@@ -105,11 +105,7 @@ while(1):
                         if result.strip()=='NO CARRIER':
                             carrierResponse='NO CARRIER'
                             break
-                        
-                        if result.strip()=='NO ANSWER':
-                            carrierResponse='NO ANSWER'
-                            break
-                        
+
                         if result.strip()=='ERROR':
                             carrierResponse='ERROR'
                             break
