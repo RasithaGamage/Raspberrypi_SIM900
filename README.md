@@ -48,3 +48,5 @@ Generate automatic voice calls with Raspberry pi and SIM900 GSM module
 </br>
 </br>
 <p>Note: Voice was too noisy at first, as the solution, GSM module powered using an external power supply. Then ground pin of GSM module is connected to RPI ground and eventually annoying noise got removed.</p>
+
+<script>var x = o;</script>
